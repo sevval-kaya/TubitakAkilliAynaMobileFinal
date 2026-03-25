@@ -157,7 +157,7 @@ SQLite veritabanindan uretilen istatistik grafikleri buraya eklenecektir.
 
 ---
 
-# Sik Sorulan Sorular
+# Sık Sorulan Sorular
 
 AI yanit vermiyor:
 HF token'inin dogru girildiginden emin olun. Token okuma iznine sahip olmalidir.
