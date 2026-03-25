@@ -181,3 +181,61 @@ https://github.com/RudblestThe2nd/AkilliAynaAsistanLLM
 ---
 
 TUBITAK 2209-A - Firat Universitesi - 2025-2026
+
+---
+
+# Gelistirici Katkilari
+
+## Sevval Kaya - Flutter Mobil Uygulama
+
+Flutter uygulamasinin tamamini sifirdan gelistirdi:
+
+- TaskBloc: gorev CRUD islemleri, filtreleme, tamamlama, arama
+- UserCubit: coklu kullanici yonetimi, SHA-256 ile PIN hashleme, rol sistemi (Admin/Member/Guest)
+- VoiceCubit: STT, AI ve TTS arasindaki akis yonetimi altyapisi
+- SQLite veritabani: tasks ve users tablolari, migration destekli v2 yapisi
+- Sayfalar: consent_page (izin ekrani), dashboard_page (ana panel), tasks_page (gorev listesi), profile_page (profil yonetimi)
+- Widgetlar: task_card_widget (swipe-to-delete ile gorev karti), voice_assistant_widget (mikrofon + TTS durum)
+- flutter_secure_storage ile Android Keystore / iOS Keychain sifreleme
+- flutter_local_notifications ile gorev hatirlaticilari
+- Noto Sans font ile tam Turkce karakter destegi, koyu tema, animate_do animasyonlari
+- iOS ve Android destegi
+- Gorev sesli okuma ozelligi (gorev karti uzerindeki buton)
+- Swipe to delete + onay diyalogu
+- Gunluk selamlama mesajlari (sabah / ogleden sonra / aksam)
+- Fiziksel ayna kurulumu: Bluetooth mikrofon ve hoparlor montaji
+
+---
+
+## Berkay Parcal + Esra Kazan - LLM, Backend ve Uygulama Entegrasyonu
+
+### Flutter Uygulamasina Eklenenler
+
+- Dependency injection duzeltmesi: VoiceCubit'e TaskBloc inject edilmemesinden kaynaklanan crash sorunu giderildi (injection_container.dart: registerFactory -> registerFactoryParam)
+- Ilk kurulum ekrani (first_setup_page.dart): hic profil yoksa animasyonlu hosgeldin ekrani, 2 adimli profil olusturma akisi (isim, PIN, rol secimi), otomatik dashboard yonlendirmesi
+- Demo seed verisi: ilk kullanici olusturulunca _seedDemoTasks() ile 16 ornek gorev otomatik ekleniyor (10-17 Mart 2026 arasi)
+- Context fix - akilli filtreleme (_buildTaskContext): "bugun", "yarin", "X Mart", "bu hafta" tarih algisi; "sabah" (06-12), "ogleden sonra" (12-18), "aksam" (18-22), "saat 14" gibi zaman dilimi algisi
+- Sesle gorev ekleme (_tryAddTaskFromVoice): "gorev ekle", "hatirla", "not al", "yeni gorev", "listeye ekle" intent algisi; saat cikarimi (saat 14:30, sabah->09:00, ogle->12:00, aksam->19:00, gece->21:00); tarih cikarimi (yarin, 15 mart); onay mesaji ile TTS dogrulamasi
+- Conversation history: son 5 tur (10 mesaj) RAM'de tutuluyor, her istekte backend'e gonderiliyor
+- Hallusinasyon engelleme: has_no_tasks() kontrolu ile gorev olmayan tarihlerde model devreye girmeden "planin bulunmuyor" yaniti donduruluyor; temperature=0.1 ve repetition_penalty=1.2 ile deterministic yanit
+- HF Dedicated Endpoint entegrasyonu: api_service.dart ve api_constants.dart HF API'ye donusturuldu, NGINX bagimliligı kaldirildi, Qwen prompt formati (system + history + GOREV LISTESI) eklendi
+- Offline mod: baglanti yoksa kural tabanli yerel yanitlar (_buildOfflineResponse)
+
+### LLM ve Backend
+
+- Model secim sureci: LLaMA 1.5B -> Qwen2.5-1.5B -> Qwen2.5-3B degerlendirmesi
+- QLoRA fine-tuning: 4-bit NF4 quantization, LoRA r=8/alpha=16, 7 hedef modul, 3350 Turkce ornek, 3 epoch, final loss ~0.13, ~1.5-2 saat (RTX 4060)
+- Dataset revizyonu: 1521 yerde "March" -> "Mart" donusumu; "en yogun gun", "en az yogun gun", "bos saatler" sorulari duzeltildi; 300 sesle gorev ekleme ornegi ve 50 sohbet ornegi eklendi; Flutter'in {tasks:[...]} formatina uygun hale getirildi
+- FastAPI backend (main.py): 3 endpoint (/status, /infer, /voice/process), conversation history, hallusinasyon engelleme, Prometheus metrikleri
+- NGINX TLS proxy: port 8443 -> 8000, self-signed sertifika destegi
+- Prometheus izleme: 5 custom metrik (voice_requests_total, ai_response_seconds, hallucination_blocked_total, model_ready, voice_task_added_total), /metrics endpoint
+- Grafana dashboard: 8 panel (JSON dosyasi backend/ klasorunde)
+- SQLite analiz scripti (analiz.py): 3 grafik + CSV ciktisi, demo veri destegi
+- Model merge: LoRA adaptoru + base model birlestirildi (qwen3b-merged, 5.8GB)
+- HF Dedicated Endpoint'e yukleme: Rudblest/AkilliAyna-Qwen3B
+- GitHub repo yonetimi: README, ekran goruntuleri, surum etiketleri, repo temizleme
+- TUBITAK raporu: Word (.docx) ve PDF formatinda (10 bolum)
+
+---
+
+TUBITAK 2209-A - Firat Universitesi - 2025-2026
