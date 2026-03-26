@@ -8,6 +8,65 @@ Koordinator: Sevval Kaya
 Gelistirici: Berkay Parcal
 Gelistirici: Esra Kazan
 
+
+---
+
+# AkilliAyna-Qwen3B
+
+Bu depo, akıllı ayna (Smart Mirror) projelerinde sanal asistan olarak kullanılmak üzere optimize edilmiş AkıllıAyna-Qwen3B dil modelinin kullanım rehberini ve kaynaklarını içermektedir. Model, Qwen-3B mimarisi temel alınarak düşük donanımlı cihazlarda (örneğin Raspberry Pi) nispeten hızlı çalışabilmesi amacıyla tasarlanmıştır.
+
+## Hugging Face Modeli
+
+Modelin ağırlıklarına (weights) ve konfigürasyon dosyalarına doğrudan Hugging Face üzerinden ulaşabilirsiniz:
+
+Hugging Face Reposu: [Rudblest/AkilliAyna-Qwen3B](https://huggingface.co/Rudblest/AkilliAyna-Qwen3B)
+
+## Özellikler
+
+* Hızlı ve Hafif: 3 Milyar parametreli (3B) yapısı sayesinde akıllı ayna gibi gömülü sistemlerde veya yerel sunucularda çalışmaya uygundur.
+* Türkçe Destekli: Akıllı ayna ile doğal dilde Türkçe iletişim kurabilmeniz için asistan yeteneklerine sahiptir.
+* Kolay Entegrasyon: Python ve transformers kütüphanesi ile kısa sürede projeye dahil edilebilir.
+
+## Kurulum ve Kullanım
+
+Modeli kendi bilgisayarınızda veya akıllı ayna donanımınızda çalıştırmak için öncelikle gerekli kütüphaneleri yükleyin:
+
+pip install transformers torch
+
+Ardından aşağıdaki Python kodu ile modeli projenize entegre edip test edebilirsiniz:
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+# Hugging Face repo yolu
+model_id = "Rudblest/AkilliAyna-Qwen3B"
+
+# Tokenizer ve Modeli yükleme
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id, 
+    torch_dtype=torch.float16, # Donanımınıza göre optimize edebilirsiniz
+    device_map="auto"
+)
+
+# Modele gönderilecek soru
+prompt = "Merhaba, bugünkü hava durumu hakkında bana ne söyleyebilirsin?"
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
+# Yanıt üretme
+outputs = model.generate(**inputs, max_new_tokens=100)
+response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+print(response)
+
+## Katkıda Bulunma
+
+Projeyi geliştirmek, yeni özellikler eklemek veya hataları bildirmek isterseniz Issues kısmından geri bildirimde bulunabilir veya Pull Request gönderebilirsiniz.
+
+## Lisans
+
+Bu proje MIT lisansı altında sunulmaktadır. (Qwen modelinin kendi kullanım lisanslarına da ayrıca dikkat edilmelidir.)
+
 ---
 
 # Ekran Goruntuleri
