@@ -212,7 +212,7 @@ Flutter uygulamasinin temel iskeleti:
 
 ---
 
-## Esra Kazan — %35
+## Esra Kazan — %30
 
 - QLoRA fine-tuning icin dataset hazirlanmasi ve veri temizligi
 - 3000 ornek uzerinde cikti kalitesi kontrolu ve duzeltmesi
