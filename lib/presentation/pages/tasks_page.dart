@@ -337,6 +337,7 @@ class _AddTaskSheetState extends State<_AddTaskSheet> {
   TaskPriority _priority = TaskPriority.medium;
   TaskCategory _category = TaskCategory.general;
   DateTime? _dueDate;
+  TimeOfDay? _dueTime;
 
   @override
   void dispose() {
@@ -436,7 +437,24 @@ class _AddTaskSheetState extends State<_AddTaskSheet> {
                       child: child!,
                     ),
                   );
-                  if (date != null) setState(() => _dueDate = date);
+                  if (date != null) {
+                    setState(() => _dueDate = date);
+                    if (context.mounted) {
+                      final time = await showTimePicker(
+                        context: context,
+                        initialTime: const TimeOfDay(hour: 9, minute: 0),
+                        builder: (ctx, child) => Theme(
+                          data: ThemeData.dark().copyWith(
+                            colorScheme: const ColorScheme.dark(
+                              primary: AppTheme.primary,
+                            ),
+                          ),
+                          child: child!,
+                        ),
+                      );
+                      if (time != null) setState(() => _dueTime = time);
+                    }
+                  }
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -457,9 +475,10 @@ class _AddTaskSheetState extends State<_AddTaskSheet> {
                       const SizedBox(width: 10),
                       Text(
                         _dueDate != null
-                            ? DateFormat('d MMMM yyyy', 'tr_TR')
-                                .format(_dueDate!)
-                            : 'Tarih seç',
+                            ? _dueTime != null
+                                ? '${DateFormat('d MMMM yyyy', 'tr_TR').format(_dueDate!)}  ${_dueTime!.hour.toString().padLeft(2, '0')}:${_dueTime!.minute.toString().padLeft(2, '0')}'
+                                : DateFormat('d MMMM yyyy', 'tr_TR').format(_dueDate!)
+                            : 'Tarih ve saat seç',
                         style: TextStyle(
                           color: _dueDate != null
                               ? AppTheme.textPrimary
@@ -491,6 +510,22 @@ class _AddTaskSheetState extends State<_AddTaskSheet> {
     if (!_formKey.currentState!.validate()) return;
     if (widget.userId.isEmpty) return;
 
+    // Saat secildiyse dueDate'e saat bilgisini ekle
+    DateTime? finalDueDate;
+    if (_dueDate != null) {
+      if (_dueTime != null) {
+        finalDueDate = DateTime(
+          _dueDate!.year,
+          _dueDate!.month,
+          _dueDate!.day,
+          _dueTime!.hour,
+          _dueTime!.minute,
+        );
+      } else {
+        finalDueDate = _dueDate;
+      }
+    }
+
     final task = Task(
       id: const Uuid().v4(),
       userId: widget.userId,
@@ -499,7 +534,7 @@ class _AddTaskSheetState extends State<_AddTaskSheet> {
           ? null
           : _descController.text.trim(),
       createdAt: DateTime.now(),
-      dueDate: _dueDate,
+      dueDate: finalDueDate,
       priority: _priority,
       category: _category,
     );

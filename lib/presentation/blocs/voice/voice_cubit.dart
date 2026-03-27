@@ -199,18 +199,26 @@ class VoiceCubit extends Cubit<VoiceState> {
     int? filterEnd;
     String? timeLabel;
 
-    if (lower.contains('sabah')) {
-      filterStart = 6; filterEnd = 12; timeLabel = 'sabah';
-    } else if (lower.contains('öğleden önce') || lower.contains('ogleden once')) {
-      filterStart = 6; filterEnd = 12; timeLabel = 'öğleden önce';
+    // Zaman dilimi kurallari:
+    // Sabah      : 05:00 - 17:00
+    // Ogleden once: 00:00 - 12:00
+    // Oglen       : 11:00 - 13:00
+    // Ogleden sonra: 12:00 - 23:59
+    // Aksam (gece): 17:01 - 04:59 (= 17-24 + 0-5)
+    // Gece        : 17:01 - 04:59
+
+    if (lower.contains('öğleden önce') || lower.contains('ogleden once')) {
+      filterStart = 0; filterEnd = 12; timeLabel = 'öğleden önce';
     } else if (lower.contains('öğleden sonra') || lower.contains('ogleden sonra')) {
-      filterStart = 12; filterEnd = 18; timeLabel = 'öğleden sonra';
-    } else if (lower.contains('öğle')) {
-      filterStart = 11; filterEnd = 14; timeLabel = 'öğle';
-    } else if (lower.contains('akşam')) {
-      filterStart = 18; filterEnd = 24; timeLabel = 'akşam';
-    } else if (lower.contains('gece')) {
-      filterStart = 21; filterEnd = 24; timeLabel = 'gece';
+      filterStart = 12; filterEnd = 24; timeLabel = 'öğleden sonra';
+    } else if (lower.contains('öğle') || lower.contains('ogle')) {
+      filterStart = 11; filterEnd = 13; timeLabel = 'öğle';
+    } else if (lower.contains('sabah')) {
+      filterStart = 5; filterEnd = 17; timeLabel = 'sabah';
+    } else if (lower.contains('akşam') || lower.contains('aksam') ||
+               lower.contains('gece')) {
+      // 17:01-23:59 ve 00:00-04:59
+      filterStart = -1; filterEnd = -1; timeLabel = lower.contains('gece') ? 'gece' : 'akşam';
     }
 
     final specificTime = RegExp(r'saat\s*(\d{1,2})(?::(\d{2}))?').firstMatch(lower);
@@ -226,6 +234,10 @@ class VoiceCubit extends Cubit<VoiceState> {
       if (t.isCompleted || t.dueDate == null) return false;
       final d = t.dueDate!;
       if (d.year != targetDate.year || d.month != targetDate.month || d.day != targetDate.day) return false;
+      if (filterStart == -1 && filterEnd == -1) {
+        // Aksam/gece: 17:00-23:59 veya 00:00-04:59
+        return d.hour >= 17 || d.hour < 5;
+      }
       if (filterStart != null && filterEnd != null) {
         return d.hour >= filterStart! && d.hour < filterEnd!;
       }
