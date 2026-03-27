@@ -175,7 +175,7 @@ Token almak icin:
 
 ---
 
-# Sik Sorulan Sorular
+# Sık Sorulan Sorular
 
 **Yapay zeka yanlis cevap veriyor:**
 Once Gorevler sekmesinden tarih ve saat girerek gorev ekleyin. Saat girilmezse zaman dilimi algisi (sabah/aksam vb.) calismiyor.
@@ -214,21 +214,21 @@ Flutter uygulamasinin temel iskeleti:
 Sevval'in teslim ettigi uygulama ilk calismada birden fazla kritik sorunla geldi. Bu sorunlarin tamamini tespit edip duzeltmek Esra ve Berkay'a dustu:
 
 **VoiceCubit crash**
-Sesli komut butonuna basildiginda uygulama cokuyordu. Sebebi `injection_container.dart`'ta VoiceCubit'e TaskBloc inject edilmemesiydi. `registerFactory` → `registerFactoryParam` degisikligi ile duzeltildi.
+--Sesli komut butonuna basildiginda uygulama cokuyordu. Sebebi `injection_container.dart`'ta VoiceCubit'e TaskBloc inject edilmemesiydi. `registerFactory` → `registerFactoryParam` degisikligi ile duzeltildi.
 **Ilk acilista login ekrani yoktu**
-Uygulama direkt dashboard'a aciliyordu, hic profil yoktu, gorev yoktu, context bosti, model hep "planin bulunmuyor" diyordu. `first_setup_page.dart` sifirdan yazildi; animasyonlu hosgeldin ekrani, 2 adimli profil olusturma akisi ve otomatik dashboard yonlendirmesi eklendi.
+--Uygulama direkt dashboard'a aciliyordu, hic profil yoktu, gorev yoktu, context bosti, model hep "planin bulunmuyor" diyordu. `first_setup_page.dart` sifirdan yazildi; animasyonlu hosgeldin ekrani, 2 adimli profil olusturma akisi ve otomatik dashboard yonlendirmesi eklendi.
 **Demo verisi yoktu**
-Uygulamayi test etmek icin her seferinde elle gorev girilmesi gerekiyordu. Her acilista sifirdan gorev eklemek test surecini ciddi sekilde zorlastirdi. `_seedDemoTasks()` fonksiyonu yazildi, ilk kullanici olusturulunca 16 ornek gorev otomatik ekleniyor.
+--Uygulamayi test etmek icin her seferinde elle gorev girilmesi gerekiyordu. Her acilista sifirdan gorev eklemek test surecini ciddi sekilde zorlastirdi. `_seedDemoTasks()` fonksiyonu yazildi, ilk kullanici olusturulunca 16 ornek gorev otomatik ekleniyor.
 **Saat alani yoktu**
-Gorev ekleme ekraninda tarih secici vardi ama saat secici yoktu. Butun gorevler 00:00 saatiyle kaydediliyordu. Bu yuzden "bugun sabah ne var" sorgusuna hic yanit gelmiyordu, filtreler hep bos donuyordu. `showTimePicker` eklendi, tarih secilince saat secici otomatik aciyor, saat bilgisi `dueDate`'e isleniyor.
+--Gorev ekleme ekraninda tarih secici vardi ama saat secici yoktu. Butun gorevler 00:00 saatiyle kaydediliyordu. Bu yuzden "bugun sabah ne var" sorgusuna hic yanit gelmiyordu, filtreler hep bos donuyordu. `showTimePicker` eklendi, tarih secilince saat secici otomatik aciyor, saat bilgisi `dueDate`'e isleniyor.
 **Context bos geliyordu**
-`VoiceCubit`'teki `_buildTaskContext` fonksiyonu gorev tarihlerini yanlis filtreliyordu, `dueDate` null olan gorevleri atliyordu. Akilli filtreleme yeniden yazildi: bugun/yarin/X Mart/bu hafta tarih algisi ve sabah/ogleden once/ogle/ogleden sonra/aksam/gece zaman dilimi algisi eklendi.
+--`VoiceCubit`'teki `_buildTaskContext` fonksiyonu gorev tarihlerini yanlis filtreliyordu, `dueDate` null olan gorevleri atliyordu. Akilli filtreleme yeniden yazildi: bugun/yarin/X Mart/bu hafta tarih algisi ve sabah/ogleden once/ogle/ogleden sonra/aksam/gece zaman dilimi algisi eklendi.
 **`ai_remote_datasource.dart` dead code**
-Dosyanin aciklamasi "NGINX AI endpoint istemcisi" yaziyordu. NGINX nerede? Raspberry Pi'da. Raspberry Pi nerede? Yok. Model nerede calisacakti? Telefonda. Telefon 8GB modeli kaldirabilir mi? Hayir. Bu dosya hic cagrilmadan projede kaldi, tum AI cagrilan `api_service.dart` uzerinden yeniden yazildi.
+--Dosyanin aciklamasi "NGINX AI endpoint istemcisi" yaziyordu. NGINX nerede? Raspberry Pi'da. Raspberry Pi nerede? Yok. Model nerede calisacakti? Telefonda. Telefon 8GB modeli kaldirabilir mi? Hayir. Bu dosya hic cagrilmadan projede kaldi, tum AI cagrilan `api_service.dart` uzerinden yeniden yazildi.
 **`192.168.1.100` hardcode IP**
-`security_layer.dart` TLS sertifika parmak izi dogrulamasi, JWT token ve cihaz ID sifreleme ile guc gosterisi yapiyordu. Bunlarin hepsi `192.168.1.100` IP'sine baglaniyor. Baska aga gecinle baglanti aninda kesildi. Guvenlik katmani o kadar saglamdi ki kendini de mahkum etti. `dart-define` ile environment variable'a tasindi, HF Endpoint'e gecildi, IP bagimliliginin koku kazindi.
+--`security_layer.dart` TLS sertifika parmak izi dogrulamasi, JWT token ve cihaz ID sifreleme ile guc gosterisi yapiyordu. Bunlarin hepsi `192.168.1.100` IP'sine baglaniyor. Baska aga gecinle baglanti aninda kesildi. Guvenlik katmani o kadar saglamdi ki kendini de mahkum etti. `dart-define` ile environment variable'a tasindi, HF Endpoint'e gecildi, IP bagimliliginin koku kazindi.
 **`IAiRemoteDataSource` inject edilmemisti**
-Interface var, class var, GetIt'e kayitli, her sey mevcut. Bir tek eksik: VoiceCubit'e inject edilmemis. Sesli komut butonuna basilinca uygulama `Null check operator used on a null value` hatasi ile aninda cokuyor. `injection_container.dart`'ta `registerFactory` → `registerFactoryParam` ile duzeltildi.
+--Interface var, class var, GetIt'e kayitli, her sey mevcut. Bir tek eksik: VoiceCubit'e inject edilmemis. Sesli komut butonuna basilinca uygulama `Null check operator used on a null value` hatasi ile aninda cokuyor. `injection_container.dart`'ta `registerFactory` → `registerFactoryParam` ile duzeltildi.
 
 **Yeni Ozellikler**
 
