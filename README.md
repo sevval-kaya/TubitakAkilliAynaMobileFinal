@@ -209,26 +209,20 @@ Flutter uygulamasinin temel iskeleti:
 
 ### Berkay Parcal — %45
 
-### Flutter uygulamasinin temel iskeleti Teslim Ettigi Uygulamadaki Kritik Sorunlar
+### Flutter Uygulamasındaki Kritik Sorunlar
 
-Sevval'in teslim ettigi uygulama ilk calismada birden fazla kritik sorunla geldi. Bu sorunlarin tamamini tespit edip duzeltmek Esra ve Berkay'a dustu:
+uygulama ilk calismada birden fazla kritik sorunla geldi. Bu sorunlarin tamamini tespit edip duzeltmek Berkay ve Esra'ya dustu:
 
-**VoiceCubit crash**
---Sesli komut butonuna basildiginda uygulama cokuyordu. Sebebi `injection_container.dart`'ta VoiceCubit'e TaskBloc inject edilmemesiydi. `registerFactory` → `registerFactoryParam` degisikligi ile duzeltildi.
-**Ilk acilista login ekrani yoktu**
---Uygulama direkt dashboard'a aciliyordu, hic profil yoktu, gorev yoktu, context bosti, model hep "planin bulunmuyor" diyordu. `first_setup_page.dart` sifirdan yazildi; animasyonlu hosgeldin ekrani, 2 adimli profil olusturma akisi ve otomatik dashboard yonlendirmesi eklendi.
-**Demo verisi yoktu**
---Uygulamayi test etmek icin her seferinde elle gorev girilmesi gerekiyordu. Her acilista sifirdan gorev eklemek test surecini ciddi sekilde zorlastirdi. `_seedDemoTasks()` fonksiyonu yazildi, ilk kullanici olusturulunca 16 ornek gorev otomatik ekleniyor.
-**Saat alani yoktu**
---Gorev ekleme ekraninda tarih secici vardi ama saat secici yoktu. Butun gorevler 00:00 saatiyle kaydediliyordu. Bu yuzden "bugun sabah ne var" sorgusuna hic yanit gelmiyordu, filtreler hep bos donuyordu. `showTimePicker` eklendi, tarih secilince saat secici otomatik aciyor, saat bilgisi `dueDate`'e isleniyor.
-**Context bos geliyordu**
---`VoiceCubit`'teki `_buildTaskContext` fonksiyonu gorev tarihlerini yanlis filtreliyordu, `dueDate` null olan gorevleri atliyordu. Akilli filtreleme yeniden yazildi: bugun/yarin/X Mart/bu hafta tarih algisi ve sabah/ogleden once/ogle/ogleden sonra/aksam/gece zaman dilimi algisi eklendi.
-**`ai_remote_datasource.dart` dead code**
---Dosyanin aciklamasi "NGINX AI endpoint istemcisi" yaziyordu. NGINX nerede? Raspberry Pi'da. Raspberry Pi nerede? Yok. Model nerede calisacakti? Telefonda. Telefon 8GB modeli kaldirabilir mi? Hayir. Bu dosya hic cagrilmadan projede kaldi, tum AI cagrilan `api_service.dart` uzerinden yeniden yazildi.
-**`192.168.1.100` hardcode IP**
---`security_layer.dart` TLS sertifika parmak izi dogrulamasi, JWT token ve cihaz ID sifreleme ile guc gosterisi yapiyordu. Bunlarin hepsi `192.168.1.100` IP'sine baglaniyor. Baska aga gecinle baglanti aninda kesildi. Guvenlik katmani o kadar saglamdi ki kendini de mahkum etti. `dart-define` ile environment variable'a tasindi, HF Endpoint'e gecildi, IP bagimliliginin koku kazindi.
-**`IAiRemoteDataSource` inject edilmemisti**
---Interface var, class var, GetIt'e kayitli, her sey mevcut. Bir tek eksik: VoiceCubit'e inject edilmemis. Sesli komut butonuna basilinca uygulama `Null check operator used on a null value` hatasi ile aninda cokuyor. `injection_container.dart`'ta `registerFactory` → `registerFactoryParam` ile duzeltildi.
+| # | Sorun | Aciklama | Cozum |
+|---|-------|----------|-------|
+| 1 | **VoiceCubit crash** | Sesli komut butonuna basildiginda uygulama aninda cokuyordu. `injection_container.dart`'ta VoiceCubit'e TaskBloc inject edilmemisti. | `registerFactory` → `registerFactoryParam` degisikligi yapildi. |
+| 2 | **Ilk acilista login ekrani yoktu** | Uygulama direkt dashboard'a aciliyordu. Hic profil yoktu, gorev yoktu, context bosti, model hep "planin bulunmuyor" diyordu. | `first_setup_page.dart` sifirdan yazildi; animasyonlu hosgeldin ekrani, 2 adimli profil olusturma akisi ve otomatik dashboard yonlendirmesi eklendi. |
+| 3 | **Demo verisi yoktu** | Her acilista sifirdan elle gorev girilmesi gerekiyordu, bu test surecini ciddi sekilde zorlastirdi. | `_seedDemoTasks()` yazildi, ilk kullanici olusturulunca 16 ornek gorev otomatik ekleniyor. |
+| 4 | **Saat alani yoktu** | Tarih secici vardi ama saat secici yoktu. Tum gorevler 00:00 saatiyle kaydediliyordu. "Bugun sabah ne var" sorgusuna hic yanit gelmiyordu, filtreler hep bos donuyordu. | `showTimePicker` eklendi, tarih secilince saat secici otomatik aciyor, saat `dueDate`'e isleniyor. |
+| 5 | **Context bos geliyordu** | `_buildTaskContext` gorev tarihlerini yanlis filtreliyordu, `dueDate` null olan gorevleri atliyordu. | Akilli filtreleme yeniden yazildi: bugun/yarin/X Mart/bu hafta tarih algisi ve sabah/ogleden once/ogle/ogleden sonra/aksam/gece zaman dilimi algisi eklendi. |
+| 6 | **`ai_remote_datasource.dart` dead code** | Dosyanin aciklamasi "NGINX AI endpoint istemcisi" yaziyordu. NGINX nerede? Raspberry Pi'da. Raspberry Pi nerede? Yok. Model telefonda mi calisacakti? 8GB model icin telefon RAM'i yetmez. Bu dosya hic cagrilmadan projede kaldi. | Tum AI cagrilan `api_service.dart` uzerinden sifirdan yazildi. |
+| 7 | **`192.168.1.100` hardcode IP** | `security_layer.dart` TLS, JWT token ve cihaz ID sifreleme ile guc gosterisi yapiyordu ama hepsi `192.168.1.100`'e bagliydi. Baska aga gecinle baglanti aninda kesildi. Guvenlik katmani o kadar saglamdi ki kendini de mahkum etti. | `dart-define` ile environment variable'a tasindi, HF Endpoint'e gecildi, IP bagimliliginin koku kazindi. |
+| 8 | **`IAiRemoteDataSource` inject edilmemisti** | Interface var, class var, GetIt'e kayitli, her sey mevcut. Bir tek eksik: VoiceCubit'e inject edilmemis. Sesli komut butonuna basilinca `Null check operator used on a null value` hatasi ile uygulama cokuyor. | `injection_container.dart`'ta `registerFactory` → `registerFactoryParam` ile duzeltildi. |
 
 **Yeni Ozellikler**
 
