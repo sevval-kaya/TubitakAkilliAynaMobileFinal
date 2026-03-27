@@ -37,29 +37,8 @@ Kullanici Bluetooth mikrofona konusur, uygulama sesi metne cevirir, yapay zeka m
 
 # Sistem Mimarisi
 
-```
-Bluetooth Mikrofon
-        |
-Flutter Android App (speech_to_text tr_TR)
-        |
-Intent Ayirici (api_service.dart)
-        |
-   +----+----+----+
-   |         |    |
-Gorev     Hava  Sohbet
-Sorgusu  Durumu
-   |         |    |
-Direkt   OpenWea  Groq API
-Metin    therMap  (Llama 3.1 8B)
-(model    API
-bypass)
-        |
-flutter_tts (tr-TR)
-        |
-Bluetooth Hoparlor
-```
 
-Gorev sorgularinda (bugun ne var, yarin programim vb.) model devreye girmez. SQLite'tan cekilen gorev listesi direkt okunabilir metne donusturulur. Bu sayede hic hallusinasyon olmuyor.
+Gorev sorgularinda (bugun ne var, yarin programim vb.) Kendi eğittiğim model olan AkilliAyna-Qwen3B  kullanılır.
 
 Hava durumu sorularinda OpenWeatherMap API kullanilir, gercek veri gelir.
 
@@ -108,7 +87,7 @@ Gundelik sohbet, motivasyon, genel sorularda Groq API uzerinden Llama 3.1 8B mod
 
 | Katman | Teknoloji | Aciklama |
 |--------|-----------|----------|
-| Mobil Framework | Flutter 3.19+ | Android |
+| Mobil Framework | Flutter 3.19+ | Android | IOS |
 | State Management | BLoC / Cubit | TaskBloc, UserCubit, VoiceCubit |
 | Gorev AI | Direkt Metin Uretimi | Model bypass, hallusinasyon yok |
 | Sohbet AI | Groq API (Llama 3.1 8B) | Gundelik sohbet |
@@ -120,7 +99,6 @@ Gundelik sohbet, motivasyon, genel sorularda Groq API uzerinden Llama 3.1 8B mod
 | Guvenlik | SHA-256 + flutter_secure_storage | PIN hashleme |
 | HTTP | Dio 5.4.3 | |
 | DI | GetIt 7.6.7 | |
-| Animasyon | animate_do | |
 
 ---
 
