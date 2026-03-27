@@ -247,7 +247,7 @@ Flutter uygulamasinin temel iskeleti:
 
 ### Esra Kazan ve Berkay Parçal Ortak çalışma 
 
-## Flutter Uygulamasındaki Kritik Sorunlar
+#### Flutter Uygulamasındaki Kritik Sorunlar
 
 uygulama ilk calismada birden fazla kritik sorunla geldi. Bu sorunlarin tamamini tespit edip duzeltmek Berkay ve Esra'ya dustu:
 
